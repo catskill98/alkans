@@ -5,7 +5,7 @@ Created on Thu Nov  7 21:38:43 2019
 
 @author: antosha
 """
-
+from sklearn.decomposition import PCA
 import openbabel as ob
 import pandas as pd  
 import numpy as np  
@@ -13,7 +13,11 @@ import matplotlib.pyplot as plt
 import seaborn as seabornInstance 
 from sklearn.model_selection import train_test_split 
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
 from sklearn import metrics
+from sklearn.linear_model import BayesianRidge
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import cross_val_score
 '''
 def printm(d,n,A,f):
     f.write("distance matr:\n")
@@ -489,6 +493,10 @@ def Alph33(obmol,f,a3,marker,n3):
 
 print('Do you need BONDTYPE-marker?')
 marker = input()
+print('input filename(only sdf format')
+na = input()
+print('input parametr(like <bp>, <A1>, 3, 4')
+desc = input()
 #open file with mols
 obconversion = ob.OBConversion()
 obconversion.SetInFormat("sdf")
@@ -499,7 +507,7 @@ f2r=open('2rows.txt','w')
 f2c=open('2columns.txt','w')
 f3r=open('3rows.txt','w')
 f3c=open('3columns.txt','w')
-notatend = obconversion.ReadFile(obmol,"ALKAN.SDF")
+notatend = obconversion.ReadFile(obmol,na)
 
 #obconversion.SetInFormat("mol")
 #notatend = obconversion.ReadFile(obmol,"2.mol")
@@ -523,8 +531,8 @@ while notatend:
     #f.write('-------------MOL:   '+obmol.GetFormula()+'\n')
     
     
-    #print(n)
-   
+    #print(n)   CalcDesc(descnames=[])
+    
     n2=(Alph2(obmol,f2,a2,marker,n2))
     n3=(Alph3(obmol,f3,a3,marker,n3))
     #print(obmol,n2, n3 )
@@ -540,12 +548,12 @@ while notatend:
     #a1.clear
     #a2.clear
     #a3.clear
-    
+
 #print(n2, n3, a2, a3)
 #n2-=1
 #n3+=1
 
-notatend = obconversion.ReadFile(obmol,"ALKAN.SDF")
+notatend = obconversion.ReadFile(obmol,na)
 i=0
 n = 0
 while notatend:
@@ -555,8 +563,8 @@ while notatend:
     #f.write('-------------MOL:   '+obmol.GetFormula()+'\n')
     
     #n=Alph1(obmol,f,a1,marker,n)-1
-    #print(n)
    
+    
     Alph22(obmol,f2,a2,marker,n2)
     f2r.write(obmol.GetFormula()+"\n")
     #countfrag(obmol)
@@ -567,6 +575,7 @@ while notatend:
     #del a2[:]
     #del a3[:]
     n+=1
+    #print(n)
     #a1.clear
     #a2.clear
     #a3.clear
@@ -582,7 +591,7 @@ for element in a2:
 #            str(element.name1)+str(element.p1)+str(element.b1)+
 #            str(element.name2)+str(element.p2)+str(element.b2)+" ")
 
-notatend = obconversion.ReadFile(obmol,"ALKAN.SDF")
+notatend = obconversion.ReadFile(obmol,na)
 i=0
 while notatend:
     f3r.write(obmol.GetFormula()+"\n")
@@ -606,21 +615,35 @@ print("\n")
 abp = []
 amp = []
 i = 0
-with open('ALKAN.SET','r') as file:
-    for line in file:
-        if 'A1' in line and i > 12:
-            abp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
-        if 'A5' in line and i > 12:
-            amp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
-           
-        i+=1
-#print(len(abp), len(amp))    
+
+#with open('ALKAN.SET','r') as file:
+#    for line in file:
+#        if 'A1' in line and i > 12:
+#            abp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
+#        if 'A5' in line and i > 12:
+#            amp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
+#           
+#        i+=1
 f2.close()
 f3.close()
 f2r.close()
 f2c.close()
 f3c.close()
-f3r.close()
+f3r.close() 
+with open(na, 'r') as file:
+    for line in file:
+        if i == 1:
+            abp.append(float(line.strip()))
+            i = 0
+            continue 
+        if desc in line and i == 0:
+            i = 1
+        
+#if na == 'CANCERF4.SDF':
+#    abp.pop[22]
+#print(abp)
+#print(len(abp), n, n2, n3)    
+
 
 
 
@@ -630,37 +653,132 @@ dataset.describe()
 X = dataset[:].values
 #y = [[x] for x in abp]
 y = pd.Series(abp)
+
+
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                                     test_size=0.2, 
                                                     random_state=0)
 regressor = LinearRegression()  
 regressor.fit(X_train, y_train)
-
-#coeff_df = pd.DataFrame(regressor.coef_, X.columns, columns=['Coefficient'])  
-
 y_pred = regressor.predict(X_test)
 df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-
-plt.figure(figsize=(15,10))
-plt.tight_layout()
-seabornInstance.distplot(y[:])
-s = 0
-for i in y:
-    s+=float(i)
-s/=n
-print(s)
-print(df)
 df.plot(kind='bar',figsize=(10,8))
 plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
 plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
 plt.show()
-
-print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))  
-print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))  
-print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print("linear",regressor.score(X_test, y_test))
 
 
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+regressor.fit(X_train, y_train)
+y_pred = regressor.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % regressor.score(X_test, y_test))
+
+
+##############################
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+ridge_regression = Ridge(alpha=0.1)  # alpha — величина регуляризации
+ridge_regression.fit(X_train, y_train)
+y_pred = ridge_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('ridge  ', ridge_regression.score(X_test, y_test))
+
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+ridge_regression.fit(X_train, y_train)
+y_pred = ridge_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % ridge_regression.score(X_test, y_test))
+
+###################################
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+lasso_regression = Lasso(alpha=0.1) # alpha — величина регуляризации
+lasso_regression.fit(X_train, y_train)
+y_pred = lasso_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('lasso', lasso_regression.score(X_test, y_test))
+
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+lasso_regression.fit(X_train, y_train)
+y_pred = lasso_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % lasso_regression.score(X_test, y_test))
+###########################
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+bayesian_regression = BayesianRidge()
+bayesian_regression.fit(X_train, y_train)
+y_pred = bayesian_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('bayes', bayesian_regression.score(X_test, y_test))
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+bayesian_regression.fit(X_train, y_train)
+y_pred = bayesian_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % bayesian_regression.score(X_test, y_test))
+###########################
+#plt.figure(figsize=(15,10))
+#plt.tight_layout()
+#seabornInstance.distplot(y[:])
+
+
+#print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))  
+#print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))  
+#print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+
+print('\n\n\n\n')
 ###############################################################################
 
 
@@ -676,29 +794,116 @@ X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     random_state=0)
 regressor = LinearRegression()  
 regressor.fit(X_train, y_train)
-
-#coeff_df = pd.DataFrame(regressor.coef_, X.columns, columns=['Coefficient'])  
-
 y_pred = regressor.predict(X_test)
 df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-
-plt.figure(figsize=(15,10))
-plt.tight_layout()
-seabornInstance.distplot(y[:])
-s = 0
-for i in y:
-    s+=float(i)
-s/=n
-print(s)
-print(df)
 df.plot(kind='bar',figsize=(10,8))
 plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
 plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
 plt.show()
+print("linear",regressor.score(X_test, y_test))
 
-print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))  
-print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))  
-print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+regressor.fit(X_train, y_train)
+y_pred = regressor.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % regressor.score(X_test, y_test))
+
+
+##############################
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+ridge_regression = Ridge(alpha=0.1)  # alpha — величина регуляризации
+ridge_regression.fit(X_train, y_train)
+y_pred = ridge_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('ridge  ', ridge_regression.score(X_test, y_test))
+
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+ridge_regression.fit(X_train, y_train)
+y_pred = ridge_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % ridge_regression.score(X_test, y_test))
+
+###################################
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+lasso_regression = Lasso(alpha=0.1) # alpha — величина регуляризации
+lasso_regression.fit(X_train, y_train)
+y_pred = lasso_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('lasso', lasso_regression.score(X_test, y_test))
+
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+lasso_regression.fit(X_train, y_train)
+y_pred = lasso_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % lasso_regression.score(X_test, y_test))
+###########################
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                    test_size=0.2, 
+                                                    random_state=0)
+bayesian_regression = BayesianRidge()
+bayesian_regression.fit(X_train, y_train)
+y_pred = bayesian_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print('bayes', bayesian_regression.score(X_test, y_test))
+pca = PCA(n_components=5)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
+bayesian_regression.fit(X_train, y_train)
+y_pred = bayesian_regression.predict(X_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df.plot(kind='bar',figsize=(10,8))
+plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
+plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+plt.show()
+print ("Score with PCA: %.6f" % bayesian_regression.score(X_test, y_test))
+
+#print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))  
+#print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))  
+#print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
 
 
