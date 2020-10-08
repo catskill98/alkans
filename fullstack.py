@@ -31,17 +31,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 
 from sklearn.decomposition import PCA
-'''
-def printm(d,n,A,f):
-    f.write("distance matr:\n")
-    
-    
-    for i in range(n):
-        #print(A[i].ind, A[i].name[:1], end = " ")  
-        for j in range(n):
-            f.write(str('{:>2}'.format(d[i][j]))+" ")
-        f.write("\n") 
-'''
+
 class fragment(object):
     """class fragmentov"""
  
@@ -82,69 +72,7 @@ def getatom_b(obatom,marker):
         b='w'
     if (obatom.HasAromaticBond()):
         b='d'
-        
-    
     return b
-###############################################################################
-def Alph1(obmol,f,a1,marker,n):
-    
-    #print(n)
-    #j=0
-    
-    for obatom in ob.OBMolAtomIter(obmol):
-        i=1
-        for element in a1:
-            if (element.name0==obatom.GetAtomicNum() and
-                element.p0==obatom.GetValence() and
-                element.b0==getatom_b(obatom,marker)
-                ):
-                element.count+=1
-                i=0
-                break
-        #print(i)       
-        if (i==1):
-            a1.append(fragment(1, n, obatom.GetAtomicNum(),obatom.GetValence(),
-                               getatom_b(obatom,marker),0,0,0,  0,0,0,  1))
-            #print(n)
-            n+=1
-            #print(n)
-                    
-    
-    print("1-alph for mol ",obmol.GetFormula(), )
-    for element in a1:
-        print(element.num, "    ", element.name0, element.p0,element.b0,
-              "   count =",element.count)
-    return n
-###############################################################################
-def Alph11(obmol,f,a1,marker,n):
-    n=0
-    #print(n)
-    #j=0
-    
-    for obatom in ob.OBMolAtomIter(obmol):
-        i=1
-        for element in a1:
-            if (element.name0==obatom.GetAtomicNum() and
-                element.p0==obatom.GetValence() and
-                element.b0==getatom_b(obatom,marker)
-                ):
-                element.count+=1
-                i=0
-                break
-        #print(i)       
-        if (i==1):
-            a1.append(fragment(1, n, obatom.GetAtomicNum(),obatom.GetValence(),
-                               getatom_b(obatom,marker),0,0,0,  0,0,0,  1))
-            #print(n)
-            n+=1
-            #print(n)
-                    
-    
-    print("1-alph for mol ",obmol.GetFormula(), )
-    for element in a1:
-        print(element.num, "    ", element.name0, element.p0,element.b0,
-              "   count =",element.count)
-              
 ###############################################################################
 def Alph2(obmol,f,a2,marker,n2):
     #n=0
@@ -190,9 +118,6 @@ def Alph2(obmol,f,a2,marker,n2):
                                0,0,0,1))
             n2+=1
     return n2
-            
-            
-    
 ###############################################################################
 def Alph22(obmol,f,a2,marker,n2):
     #n=0
@@ -238,25 +163,6 @@ def Alph22(obmol,f,a2,marker,n2):
         f.write(str(localmol[i])+" ")
     
     f.write("\n")
-#        if (i==1):
-#            a2.append(fragment(2, n, (obbond.GetBeginAtom()).GetType()[:1],
-#                               obbond.GetBeginAtom().GetValence(),
-#                               getatom_b(obbond.GetBeginAtom(),marker),
-#                               
-#                               (obbond.GetEndAtom()).GetType()[:1],
-#                               obbond.GetEndAtom().GetValence(),
-#                               getatom_b(obbond.GetEndAtom(),marker),
-#                               
-#                               0,0,0,1))
-#            n+=1
-            
-            
-            
-#    print("2-alph for mol ",obmol.GetFormula())
-#    for element in a2:
-#        print(element.num, "  ", element.name0, element.p0,element.b0 ,
-#              element.name1,element.p1,element.b1, " count =", element.count)
-          
 ###############################################################################
 def check1(a3,obmol,first,mutual,last,n3,localmol):
     i=1
@@ -276,15 +182,8 @@ def check1(a3,obmol,first,mutual,last,n3,localmol):
             element.name2==last.GetAtomicNum() and
             element.p2==last.GetValence() and
             element.b2==getatom_b(last,marker)):
-           
-           
-                
-               # element.name2==last.GetType()):
-                
-                
+
                 i=0
-                #localmol[j]+=1
-                #element.count+=1
                 break
                 
             if (element.name2==first.GetAtomicNum() and
@@ -314,9 +213,7 @@ def check1(a3,obmol,first,mutual,last,n3,localmol):
                                last.GetValence(),
                                getatom_b(last,marker),  1))
         n3+=1
-    return n3
-        
-        
+    return n3   
 ###############################################################################
 def check2(a3,obmol,first,mutual,last,n3,localmol):
     i=1
@@ -354,14 +251,10 @@ def check2(a3,obmol,first,mutual,last,n3,localmol):
             
             element.name0==last.GetAtomicNum() and
             element.p0==last.GetValence() and
-            element.b0==getatom_b(last,marker)):
-           
-                
-                
+            element.b0==getatom_b(last,marker)):      
                 i=0
                 localmol[element.num]+=1
-                #element.count+=1
-                
+
         j+=1
         
         
@@ -384,8 +277,6 @@ def Alph3(obmol,f,a3,marker,n3):
    # n=0 
     calc=1
     for obbond in ob.OBMolBondIter(obmol):
-        #for obbond in ob.OBMolBondIter(obmol):
-        #print(obbond.GetIdx())
         for obbondin in ob.OBMolBondIter(obmol):
             if (obbondin.GetIdx()<calc):
                 continue
@@ -450,8 +341,6 @@ def Alph33(obmol,f,a3,marker,n3):
             inbegin=(obbondin.GetBeginAtom()).GetId()
             end=(obbond.GetEndAtom()).GetId()
             begin=(obbond.GetBeginAtom()).GetId()
-            #found joint atom 
-            #1
             if (begin==inbegin):
                 first=obbond.GetEndAtom()
                 mutual=obbond.GetBeginAtom()
@@ -494,13 +383,6 @@ def Alph33(obmol,f,a3,marker,n3):
     for i in range(n3):
         f.write(str(localmol[i])+" ")
     f.write("\n")
-    #print("\n")
-#    print("3-alph for mol ",obmol.GetFormula())
-#    for element in a3:
-#        print(element.num, "  ", 
-#              element.name0,element.p0,element.b0,
-#              element.name1,element.p1,element.b1,
-#              element.name2,element.p2,element.b2," count =", element.count)
 ###############################################################################
 def fourregs(X, y, regressor, n):
     
@@ -508,8 +390,8 @@ def fourregs(X, y, regressor, n):
                                                     test_size=0.2, 
                                                     random_state=0)
     regressor.fit(X_train, y_train)
-    y_pred = regressor.predict(X_test)
-    df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+#    y_pred = regressor.predict(X_test)
+#    df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
     #df.plot(kind='bar',figsize=(10,8))
     #plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
     #plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
@@ -526,13 +408,42 @@ def fourregs(X, y, regressor, n):
     X_train = pca.transform(X_train)
     X_test = pca.transform(X_test)
     regressor.fit(X_train, y_train)
-    y_pred = regressor.predict(X_test)
-    df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+#    y_pred = regressor.predict(X_test)
+#    df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
     print ("Score with PCA: %.6f" % regressor.score(X_test, y_test))
-    
-    
-    ##############################
-    
+
+def forregCV(X, y, regressor):
+    kf = RepeatedKFold(n_splits=5, n_repeats=30)
+   
+    if regressor == ridge_regression:
+        print("ridge")
+        regressor = RidgeCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10], cv=kf).fit(X, y)
+        print('Ridge CV: ',regressor.score(X, y))
+        return
+    if regressor == lasso_regression:
+        print("lasso")
+        regressor = LassoCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10], cv=kf).fit(X, y)
+        print('Lasso CV: ',regressor.score(X, y))
+        return
+    #REPEATED KFOLD CROSS-VAL
+#    midl = []
+    scores = cross_val_score(regressor, X, y, cv=kf, n_jobs=-1)
+    print("---> ", scores.mean())
+#    for train_index, test_index in kf.split(X):
+#    #    print("TRAIN:", train_index, "TEST:", test_index)
+#        X_train, X_test = X[train_index], X[test_index]
+#        y_train, y_test = y[train_index], y[test_index]
+#        if regressor == ridge_regression:
+#            regressor = RidgeCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10]).fit(X, y)
+#        elif regressor == lasso_regression:
+#            regressor = LassoCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10]).fit(X, y)
+#        elif True:
+#            regressor.fit(X_train, y_train)
+##        y_pred = regressor.predict(X_test)
+##        df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+#        midl.append(regressor.score(X_test, y_test))
+#    #    print("linear splitted",regressor.score(X_test, y_test))
+#    print('Average with repeatedKFOLD: ',  np.mean(midl))    
     
 ###############################################################################
 
@@ -553,77 +464,27 @@ f2c=open('2columns.txt','w')
 f3r=open('3rows.txt','w')
 f3c=open('3columns.txt','w')
 notatend = obconversion.ReadFile(obmol,na)
-
-#obconversion.SetInFormat("mol")
-#notatend = obconversion.ReadFile(obmol,"2.mol")
-
-
-
-
 a1 = []          #lists of fragments
 a2 = []
 a3 = []
 etab = ob.OBElementTable();
-#Alph1(obmol,f2,a1)
-#mols in file
 i=0
 n2=0
 n3=0
 while notatend:
-    #for obatom in ob.OBMolAtomIter(obmol):
-    #    print(obatom.GetType()[:1], end=' ')
-    #print("\n")
-    #f.write('-------------MOL:   '+obmol.GetFormula()+'\n')
-    
-    
-    #print(n)   CalcDesc(descnames=[])
-    
     n2=(Alph2(obmol,f2,a2,marker,n2))
     n3=(Alph3(obmol,f3,a3,marker,n3))
-    #print(obmol,n2, n3 )
-    #Alph1(obmol,f2,a1,marker,0)
-    #countfrag(obmol)
-    #descriptmatrix
     notatend = obconversion.Read(obmol)
-    #print("\n")
-    #del a1[:]
-    #del a2[:]
-    #del a3[:]
-    
-    #a1.clear
-    #a2.clear
-    #a3.clear
-
-#print(n2, n3, a2, a3)
-#n2-=1
-#n3+=1
 
 notatend = obconversion.ReadFile(obmol,na)
 i=0
 n = 0
 while notatend:
-    #for obatom in ob.OBMolAtomIter(obmol):
-    #    print(obatom.GetType()[:1], end=' ')
-    #print("\n")
-    #f.write('-------------MOL:   '+obmol.GetFormula()+'\n')
-    
-    #n=Alph1(obmol,f,a1,marker,n)-1
-   
-    
     Alph22(obmol,f2,a2,marker,n2)
     f2r.write(obmol.GetFormula()+"\n")
-    #countfrag(obmol)
-    #descriptmatrix
+#    print(obmol.GetFormula()+"\n")
     notatend = obconversion.Read(obmol)
-    #print("\n")
-    #del a1[:]
-    #del a2[:]
-    #del a3[:]
     n+=1
-    #print(n)
-    #a1.clear
-    #a2.clear
-    #a3.clear
 for element in a2:
     if len(etab.GetSymbol(element.name0)) == 1:
         element.name0 = etab.GetSymbol(element.name0)+'_'
@@ -631,11 +492,7 @@ for element in a2:
         element.name1 = etab.GetSymbol(element.name1)+'_'
     f2c.write(str(element.name0)+str(element.p0)+str(element.b0)+
              str(element.name1)+str(element.p1)+str(element.b1)+' ')
-
-#    print(element.num, str(element.name0)+str(element.p0)+str(element.b0)+
-#            str(element.name1)+str(element.p1)+str(element.b1)+
-#            str(element.name2)+str(element.p2)+str(element.b2)+" ")
-
+    
 notatend = obconversion.ReadFile(obmol,na)
 i=0
 while notatend:
@@ -655,26 +512,20 @@ for element in a3:
             str(element.name1)+str(element.p1)+str(element.b1)+
             str(element.name2)+str(element.p2)+str(element.b2)+" ")
 print("\n") 
-#print("2-alph for mol ",obmol.GetFormula())
-
-abp = []
-amp = []
-i = 0
-
-#with open('ALKAN.SET','r') as file:
-#    for line in file:
-#        if 'A1' in line and i > 12:
-#            abp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
-#        if 'A5' in line and i > 12:
-#            amp.append(float((line.replace("  ", " ").split(' ')).pop(1)))
-#           
-#        i+=1
 f2.close()
 f3.close()
 f2r.close()
 f2c.close()
 f3c.close()
 f3r.close() 
+
+
+
+abp = []
+amp = []
+i = 0
+
+
 with open(na, 'r') as file:
     for line in file:
         if i == 1:
@@ -683,29 +534,101 @@ with open(na, 'r') as file:
             continue 
         if desc in line and i == 0:
             i = 1
-        
-#if na == 'CANCERF4.SDF':
-#    abp.pop[22]
-#print(abp)
-#print(len(abp), n, n2, n3)    
-
-
+#na = "pirimidines205_activity.txt"
+#with open(na, 'r') as file:
+#    for line in file:
+#        abp.append(int(line.strip()))
+           
+       
 ridge_regression = Ridge(alpha=0.1)  # alpha — величина регуляризации
 regressor = LinearRegression()
 lasso_regression = Lasso(alpha=0.1)
 bayesian_regression = BayesianRidge()
 n_pca = 5
+
 midl = []
 dataset = pd.read_csv('2matr.txt', sep = '\s+', header=None, engine = 'python')
 print(dataset.shape)
+
+from sklearn.metrics import silhouette_score
+
+
+
+from sklearn.cluster import DBSCAN
 
 dataset.describe()
 X = dataset[:].values
 y = pd.Series(abp)
 
 
+X_pca = PCA(n_components=2).fit_transform(X)
+plt.scatter(X_pca[:,0], X_pca[:,1])
+dbscan = DBSCAN(eps=0.04, min_samples=2, metric="cosine")
+res = dbscan.fit_predict(X_pca)
+cluster_structure = res
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=res, cmap=plt.cm.Paired)
 
-#CLASSIC AND PCA
+
+print(silhouette_score(X,res))
+#print(cluster_structure)
+for i in np.unique(cluster_structure):
+    if i == -1:
+        continue
+    X_cl = X[np.where(res==i)[0],:]
+    y_cl = y[np.where(res==i)[0]]
+    forregCV(X_cl, y_cl, regressor)
+#    forregCV(X_cl, y_cl, ridge_regression)
+#    forregCV(X_cl, y_cl, lasso_regression)
+#    forregCV(X_cl, y_cl, bayesian_regression)
+    
+    
+    
+#    
+#y_new = []
+#ans_all = []
+#iterat = 1
+#for i in np.unique(cluster_structure):
+#    if i == -1:
+#        continue
+#    X_in_clust = X[np.where(res==i)[0],:]
+#    y_in_clust = y[np.where(res==i)[0],0]
+#    ans = []
+#    midl = []
+#    for train_index, test_index in RepeatedKFold(min(10, X_in_clust.shape[0])).split(X_in_clust):
+#        
+#        
+#        X_train = X_in_clust[train_index, :]
+#        y_train = y_in_clust[train_index]
+#
+#        X_test = X_in_clust[test_index, :]
+#        y_test = y_in_clust[test_index]
+#        
+#        
+#        regressor.fit(X_train, y_train)
+##        y_pred = regressor.predict(X_test)
+##        df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+#        midl.append(regressor.score(X_test, y_test))
+#        print("linear splitted",regressor.score(X_test, y_test))
+#    
+
+#from sklearn.neighbors import KNeighborsClassifier
+
+#X_train, X_test, y_train, y_test = train_test_split(X, y, 
+#                                                        test_size=0.2, 
+#                                                        random_state=0)
+##clustering = DBSCAN(eps=0.03, min_samples=2, n_jobs=-1)
+#clustering = KNeighborsClassifier(n_neighbors=3)
+##clustering.fit(X)
+#clustering.fit(X_train, y_train)
+#y_pred = clustering.predict(X_test)
+#print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+#print(res)
+#print(clustering.score(X_train, y_train))
+#print(res.labels_)
+#print(silhouette_score(X_train,res))
+#
+
+#CLASSIC AND PCA 5
 #for clf in [ridge_regression, regressor, lasso_regression, bayesian_regression]:
 #    fourregs(X, y, clf, n_pca)
 #    
@@ -722,8 +645,12 @@ y = pd.Series(abp)
 ##    print("linear splitted",regressor.score(X_test, y_test))
 #print('Average linear with KFOLD: ', np.mean(midl))    
 
+#######################>>>trainCV regs<<<#######################
+#for clf in [ridge_regression, regressor, bayesian_regression]:
+#    forregCV(X, y, clf)
 
 
+#######################>>>sh<<<#######################
 #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
 #print(cross_val_score(regressor, X, y, cv=5))
 #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
@@ -733,25 +660,25 @@ y = pd.Series(abp)
 #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
 #print(cross_val_score(bayesian_regression, X, y, cv=5))
 
-
-for clf in [regressor, ridge_regression,lasso_regression,bayesian_regression]:
-    for i in [1,2,3,4,5,6,7,8,9,10]:
-        
-        kf = RepeatedKFold(n_splits=5, n_repeats=5)
-        midl = []
-        for train_index, test_index in kf.split(X):
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
-            pca = PCA(n_components=i)
-            pca.fit(X_train)
-            X_train = pca.transform(X_train)
-            X_test = pca.transform(X_test)
-            clf.fit(X_train, y_train)
-            y_pred = clf.predict(X_test)
-            midl.append(clf.score(X_test, y_test))
-        print('Average with KFOLD i=',i,  np.mean(midl))
-    print("\n")
-    
+#######################>>>PCA CV regs<<<#######################
+#for clf in [regressor, ridge_regression,lasso_regression,bayesian_regression]:
+#    for i in [1,2,3,4,5,6,7,8,9,10]:
+#        
+#        kf = RepeatedKFold(n_splits=5, n_repeats=5)
+#        midl = []
+#        for train_index, test_index in kf.split(X):
+#            X_train, X_test = X[train_index], X[test_index]
+#            y_train, y_test = y[train_index], y[test_index]
+#            pca = PCA(n_components=i)
+#            pca.fit(X_train)
+#            X_train = pca.transform(X_train)
+#            X_test = pca.transform(X_test)
+#            clf.fit(X_train, y_train)
+#            y_pred = clf.predict(X_test)
+#            midl.append(clf.score(X_test, y_test))
+#        print('Average with KFOLD i=',i,  np.mean(midl))
+#    print("\n")
+#    
        
 #CROSS RIDGE AND LASSO
 #clf = RidgeCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10], cv=5).fit(X, y)
@@ -772,6 +699,56 @@ X = dataset[:].values
 y = pd.Series(abp)
 
 
+
+#X_pca = PCA(n_components=2).fit_transform(X)
+#plt.scatter(X_pca[:,0], X_pca[:,1])
+#clustering = DBSCAN(eps=0.3, min_samples=2, n_jobs=-1)
+##clustering.fit(X)
+#res = clustering.fit_predict(X)
+#print(res)
+
+#kf = RepeatedKFold(n_splits=5, n_repeats=5)
+#midl = []
+#for train_index, test_index in kf.split(X):
+#    X_train, X_test = X[train_index], X[test_index]
+#    y_train, y_test = y[train_index], y[test_index]
+#    pca = PCA(n_components=2)
+#    pca.fit(X_train)
+#    X_train = pca.transform(X_train)
+#    X_test = pca.transform(X_test)
+##    clf.fit(X_train, y_train)
+##    y_pred = clf.predict(X_test)
+##    midl.append(clf.score(X_test, y_test))
+#    dbscan = DBSCAN(eps=0.04, min_samples=2, metric="cosine")
+#    res = dbscan.fit_predict(X_train)
+#    cluster_structure = res
+#    plt.scatter(X_train[:, 0], X_train[:, 1], c=res, cmap=plt.cm.Paired)
+##print('Average with KFOLD i=',i,  np.mean(midl))
+ 
+ 
+#print(res.labels_)
+#print(silhouette_score(X,res))
+ 
+ 
+ 
+#for clf in [regressor, bayesian_regression]:
+#    for i in [1,2,3,4,5,6,7,8,9,10]:
+#        
+#        kf = RepeatedKFold(n_splits=5, n_repeats=20)
+#        midl = []
+#        for train_index, test_index in kf.split(X):
+#            X_train, X_test = X[train_index], X[test_index]
+#            y_train, y_test = y[train_index], y[test_index]
+#            pca = PCA(n_components=i)
+#            pca.fit(X_train)
+#            X_train = pca.transform(X_train)
+#            X_test = pca.transform(X_test)
+#            clf.fit(X_train, y_train)
+#            y_pred = clf.predict(X_test)
+#            midl.append(clf.score(X_test, y_test))
+#        print('Average with KFOLD i=',i,  np.mean(midl))
+#    print("\n")
+
 #for clf in [ridge_regression, regressor, lasso_regression, bayesian_regression]:
 #    fourregs(X, y, clf, n_pca)
 #
@@ -788,7 +765,9 @@ y = pd.Series(abp)
 ##    print("linear splitted",regressor.score(X_test, y_test))
 #print('Average linear with KFOLD: ', np.mean(midl))  
 
-
+#######################>>>trainCV regs<<<#######################
+#for clf in [ridge_regression, regressor, bayesian_regression]:
+#    forregCV(X, y, clf)
 
 #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
 #print(cross_val_score(regressor, X, y, cv=cv))
@@ -798,23 +777,28 @@ y = pd.Series(abp)
 #print(cross_val_score(lasso_regression, X, y, cv=cv))
 #cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
 #print(cross_val_score(bayesian_regression, X, y, cv=cv))
-for clf in [regressor, ridge_regression,lasso_regression,bayesian_regression]:
-    for i in [1,2,3,4,5,6,7,8,9,10]:
-        
-        kf = RepeatedKFold(n_splits=5, n_repeats=5)
-        midl = []
-        for train_index, test_index in kf.split(X):
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
-            pca = PCA(n_components=i)
-            pca.fit(X_train)
-            X_train = pca.transform(X_train)
-            X_test = pca.transform(X_test)
-            clf.fit(X_train, y_train)
-            y_pred = clf.predict(X_test)
-            midl.append(clf.score(X_test, y_test))
-        print('Average with KFOLD i=',i,  np.mean(midl))
-    print("\n")
+    
+    
+    
+#for clf in [regressor, ridge_regression,lasso_regression,bayesian_regression]:
+#    for i in [1,2,3,4,5,6,7,8,9,10]:
+#        
+#        kf = RepeatedKFold(n_splits=5, n_repeats=5)
+#        midl = []
+#        for train_index, test_index in kf.split(X):
+#            X_train, X_test = X[train_index], X[test_index]
+#            y_train, y_test = y[train_index], y[test_index]
+#            pca = PCA(n_components=i)
+#            pca.fit(X_train)
+#            X_train = pca.transform(X_train)
+#            X_test = pca.transform(X_test)
+#            clf.fit(X_train, y_train)
+#            y_pred = clf.predict(X_test)
+#            midl.append(clf.score(X_test, y_test))
+#        print('Average with KFOLD i=',i,  np.mean(midl))
+#    print("\n")
+#    
+#    
 #clf = RidgeCV(alphas=[1e-3, 1e-2, 1e-1, 1, 10], cv=5).fit(X, y)
 #print('Ridge CV: ', clf.score(X, y))
 #clf = LassoCV(alphas=[1e-3, 1e-2, 1e-1, 1], cv=10).fit(X, y)
@@ -823,4 +807,3 @@ for clf in [regressor, ridge_regression,lasso_regression,bayesian_regression]:
 
 del a2[:]
 del a3[:]
-#fclose()
